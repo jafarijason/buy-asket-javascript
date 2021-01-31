@@ -29,7 +29,7 @@ const renderProducts = () => {
             </div>
             <h2 class="product__title">${item.name}</h2>
             <h3 class="product__price">${item.price} تومان</h3>
-            <button class="add-to-cart">افزودن به سبد خرید</button>
+            <button class="add-to-cart" onClick="addToCart(${index})">افزودن به سبد خرید</button>
         </div>`
     })
 }
@@ -44,12 +44,12 @@ const renderCartItems = () => {
 
     let totalPraice = 0
 
-    if(cart.items.length == 0 ){
+    if (cart.items.length == 0) {
         cartDiv.innerHTML = 'محصولی در سبد خرید وجود ندارد'
     }
 
-    cart.items.forEach((item, index)=>{
-        totalPraice =+ item.total
+    cart.items.forEach((item, index) => {
+        totalPraice = +item.total
 
         cartDiv.innerHTML += `
               <div class="cart__item">
@@ -67,6 +67,43 @@ const renderCartItems = () => {
     })
 
     totalPriceEl.innerHTML = `مجموع: ${totalPraice}  تومان`
+}
+
+
+const addToCart = (productIndex) => {
+    const product = products[productIndex]
+
+    let existingProduct = false
+
+    let newCartItems = cart.items.reduce((state, item) => {
+        if (item.name === product.name) {
+            existingProduct = true
+
+            const newItem = {
+                ...item,
+                qty: item.qty + 1,
+                total: (item.qty + 1) * item.price
+            }
+            return [...state, newItem]
+        }
+
+        return [...state, item]
+    }, [])
+
+    if(!existingProduct){
+        newCartItems.push({
+            ...product,
+            qty:1,
+            total: product.product
+        })
+    }
+
+    cart = {
+        ...cart,
+        items: newCartItems
+    }
+
+    renderCartItems()
 }
 
 renderProducts()
